@@ -21,6 +21,7 @@ CREATE TABLE Artworks (
   ArtistID INT,
   CreationYear INT,
   Medium VARCHAR(255),
+  CollectionName VARCHAR(255),
   Category VARCHAR(50),
   Status VARCHAR(100),
   FOREIGN KEY (ArtistID) REFERENCES Artists(ArtistID)
@@ -33,11 +34,11 @@ INSERT INTO Artists (ArtistID, Name, BirthYear, Nationality) VALUES
 (45678, 'Auguste Rodin', 1840, 'French'),
 (56789, 'Donatello', 1386, 'Italian');
 
-INSERT INTO Artworks (Title, ArtistID, CreationYear, Medium, Category, Status) 
+INSERT INTO Artworks (Title, ArtistID, CreationYear, Medium, CollectionName, Category, Status) 
 VALUES 
-('Mona Lisa', 12345, 1503, 'Oil on wood panel', 'Painting', 'Borrowed'),
-('The Lacemaker', 23456, 1670, 'Oil on canvas', 'Painting', 'Borrowed'),
-('Starry Night', 34567, 1889, 'Oil on canvas', 'Painting', 'Borrowed'),
-('The Thinker', 45678, 1902, 'Bronze', 'Sculpture', 'Borrowed'),
-('Venus de Milo', 56789, 100, 'Marble', 'Sculpture', 'Borrowed'),
-('David', 56789, 1504, 'Marble', 'Sculpture', 'Borrowed');
+('Mona Lisa', 12345, 1503, 'Oil on wood panel','MASTERPIECES OF THE LOUVRE' ,'Painting', 'Borrowed'),
+('The Lacemaker', 23456, 1670, 'Oil on canvas','MASTERPIECES OF THE LOUVRE' , 'Painting', 'Borrowed'),
+('Starry Night', 34567, 1889, 'Oil on canvas','MASTERPIECES OF THE LOUVRE' , 'Painting', 'Borrowed'),
+('The Thinker', 45678, 1902, 'Bronze','NATIONAL MUSEUMS RECOVERY' , 'Sculpture', 'Borrowed'),
+('Venus de Milo', 56789, 100, 'Marble', 'NATIONAL MUSEUMS RECOVERY' ,'Sculpture', 'Borrowed'),
+('David', 56789, 1504, 'Marble', 'NATIONAL MUSEUMS RECOVERY' ,'Sculpture', 'Borrowed');
