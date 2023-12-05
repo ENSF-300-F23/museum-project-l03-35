@@ -26,6 +26,23 @@ def connect_and_execute(event=None):
     except mysql.connector.Error as err:
         messagebox.showerror("Error", f"An error occurred: {err}")
 
+button_style = {
+        'bg': '#007acc',
+        'fg': 'white',
+        'font': ('Helvetica', 13, 'bold'),
+        'width': 15,
+        'height': 2,
+        'relief': tkinter.RAISED,
+        'borderwidth': 2,
+        'cursor': 'hand2',
+    }
+
+def on_enter(e, btn):
+    btn['background'] = '#00ccb8'
+
+def on_leave(e, btn):
+    btn['background'] = '#007acc'
+
 def main_menu():
     root.withdraw()
     main_menu = tkinter.Toplevel(root)
@@ -46,23 +63,6 @@ def main_menu():
     button_frame = tkinter.Frame(main_menu, bg='#f0f0f0')
     button_frame.pack(pady=50)
 
-    button_style = {
-        'bg': '#007acc',
-        'fg': 'white',
-        'font': ('Helvetica', 13, 'bold'),
-        'width': 15,
-        'height': 2,
-        'relief': tkinter.RAISED,
-        'borderwidth': 2,
-        'cursor': 'hand2',
-    }
-
-    def on_enter(e, btn):
-        btn['background'] = '#00ccb8'
-
-    def on_leave(e, btn):
-        btn['background'] = '#007acc'
-
     btn_admin = tkinter.Button(button_frame, text="ADMIN", **button_style)
     btn_admin.pack(pady=10)
     btn_admin.bind("<Enter>", lambda e, btn=btn_admin: on_enter(e, btn))
@@ -73,17 +73,70 @@ def main_menu():
     btn_data_entry.bind("<Enter>", lambda e, btn=btn_data_entry: on_enter(e, btn))
     btn_data_entry.bind("<Leave>", lambda e, btn=btn_data_entry: on_leave(e, btn))
 
-    btn_guest = tkinter.Button(button_frame, text="GUEST", **button_style)
+    btn_guest = tkinter.Button(button_frame, text="GUEST", command=guest_interface, **button_style)
     btn_guest.pack(pady=10)
     btn_guest.bind("<Enter>", lambda e, btn=btn_guest: on_enter(e, btn))
     btn_guest.bind("<Leave>", lambda e, btn=btn_guest: on_leave(e, btn))
 
     button_frame.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
+def guest_interface():
+    guest_window = tkinter.Toplevel(root)
+    guest_window.title("Guest Browsing Interface")
+    window_width, window_height = 500, 325
+    center_x, center_y = calculate_center(guest_window, window_width, window_height)
+    guest_window.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+
+    btn_display_artists = tkinter.Button(guest_window, text="Display Artists", command=lambda: display_artists(guest_window), **button_style)
+    btn_display_artists.pack(pady=10)
+    btn_display_artists.bind("<Enter>", lambda e, btn=btn_display_artists: on_enter(e, btn))
+    btn_display_artists.bind("<Leave>", lambda e, btn=btn_display_artists: on_leave(e, btn))
+
+    btn_view_collection = tkinter.Button(guest_window, text="View Collection", command=lambda: view_collection(guest_window), **button_style)
+    btn_view_collection.pack(pady=10)
+    btn_view_collection.bind("<Enter>", lambda e, btn=btn_view_collection: on_enter(e, btn))
+    btn_view_collection.bind("<Leave>", lambda e, btn=btn_view_collection: on_leave(e, btn))
+
+    btn_borrowed_art = tkinter.Button(guest_window, text="Borrowed Art", command=lambda: borrowed_art(guest_window), **button_style)
+    btn_borrowed_art.pack(pady=10)
+    btn_borrowed_art.bind("<Enter>", lambda e, btn=btn_borrowed_art: on_enter(e, btn))
+    btn_borrowed_art.bind("<Leave>", lambda e, btn=btn_borrowed_art: on_leave(e, btn))
+
+    btn_view_all = tkinter.Button(guest_window, text="View All", command=lambda: view_all(guest_window), **button_style)
+    btn_view_all.pack(pady=10)
+    btn_view_all.bind("<Enter>", lambda e, btn=btn_view_all: on_enter(e, btn))
+    btn_view_all.bind("<Leave>", lambda e, btn=btn_view_all: on_leave(e, btn))
+
+def calculate_center(window, width, height):
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+    center_x = int(screen_width / 2 - width / 2)
+    center_y = int(screen_height / 2 - height / 2)
+    return center_x, center_y
+
+def display_artists(window):
+    # Logic to fetch and display artists and their art
+    pass
+
+def view_collection(window):
+    # Logic to fetch and display artworks in a collection
+    pass
+
+def borrowed_art(window):
+    # Logic to fetch and display borrowed art
+    pass
+
+def view_all(window):
+    # Logic to fetch and display all data
+    pass
+
+def close_all_windows():
+    root.destroy()
 
 root = tkinter.Tk()
 root.title("ART MUSEUM MANAGEMENT SYSTEM")
 #root.iconbitmap('path_to_your_icon.ico')
+root.protocol("WM_DELETE_WINDOW", close_all_windows)
 
 window_width = 500
 window_height = 300
