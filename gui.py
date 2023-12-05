@@ -1,6 +1,6 @@
 import tkinter
 import mysql.connector
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 
 
 def connect_and_execute(event=None):
@@ -181,40 +181,57 @@ def view_all(parent_window):
         # Create a new pop-up window as a child of the parent window
         display_window = tkinter.Toplevel(parent_window)
         display_window.title("All Museum Data")
-        display_window.geometry("600x400")  # Adjust size as needed
+        display_window.geometry("1050x800")  # Adjust size as needed
 
-        # Adding a scrollbar
-        scrollbar = tkinter.Scrollbar(display_window)
-        scrollbar.pack(side="right", fill="y")
-
-        # Text area for data display
-        text_area = tkinter.Text(display_window, yscrollcommand=scrollbar.set)
-        text_area.pack(fill="both", expand=True)
-        scrollbar.config(command=text_area.yview)
+        # Treeview for Artists
+        artist_label = tkinter.Label(display_window, text="Artists")
+        artist_label.pack()
+        artist_columns = ("ArtistID", "Name", "BirthYear", "Nationality")
+        artist_tree = ttk.Treeview(display_window, columns=artist_columns, show='headings')
+        # Set column headings and widths
+        artist_tree.column("ArtistID", width=70)
+        artist_tree.column("Name", width=150)
+        artist_tree.column("BirthYear", width=70)
+        artist_tree.column("Nationality", width=100)
+        for col in artist_columns:
+            artist_tree.heading(col, text=col)
+        artist_tree.pack(expand=True, fill='both')
 
         # Fetch and display Artists data
         cursor.execute("SELECT * FROM Artists")
         artists = cursor.fetchall()
-        text_area.insert(tkinter.END, "Artists:\n")
         for artist in artists:
-            artist_info = f"ID: {artist[0]}, Name: {artist[1]}, Birth Year: {artist[2]}, Nationality: {artist[3]}\n"
-            text_area.insert(tkinter.END, artist_info)
-        text_area.insert(tkinter.END, "\n")
+            artist_tree.insert('', tkinter.END, values=artist)
+
+        # Treeview for Artworks
+        artwork_label = tkinter.Label(display_window, text="Artworks")
+        artwork_label.pack()
+        artwork_columns = ("ArtworkID", "Title", "ArtistID", "CreationYear", "Medium", "CollectionName", "Category", "Status")
+        artwork_tree = ttk.Treeview(display_window, columns=artwork_columns, show='headings')
+        # Set column headings and widths
+        artwork_tree.column("ArtworkID", width=70)
+        artwork_tree.column("Title", width=150)
+        artwork_tree.column("ArtistID", width=70)
+        artwork_tree.column("CreationYear", width=70)
+        artwork_tree.column("Medium", width=100)
+        artwork_tree.column("CollectionName", width=120)
+        artwork_tree.column("Category", width=80)
+        artwork_tree.column("Status", width=80)
+        for col in artwork_columns:
+            artwork_tree.heading(col, text=col)
+        artwork_tree.pack(expand=True, fill='both')
 
         # Fetch and display Artworks data
         cursor.execute("SELECT * FROM Artworks")
         artworks = cursor.fetchall()
-        text_area.insert(tkinter.END, "Artworks:\n")
         for artwork in artworks:
-            artwork_info = f"ID: {artwork[0]}, Title: {artwork[1]}, Artist ID: {artwork[2]}, Year: {artwork[3]}, Medium: {artwork[4]}, Collection: {artwork[5]}, Category: {artwork[6]}, Status: {artwork[7]}\n"
-            text_area.insert(tkinter.END, artwork_info)
+            artwork_tree.insert('', tkinter.END, values=artwork)
 
         # Close cursor and connection
         cursor.close()
         conn.close()
     except mysql.connector.Error as err:
         messagebox.showerror("Error", f"Database error: {err}")
-
 
 def close_all_windows():
     root.destroy()
