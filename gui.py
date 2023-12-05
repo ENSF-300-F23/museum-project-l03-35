@@ -23,11 +23,11 @@ def connect_and_execute(event=None):
         conn.close()
         messagebox.showinfo("Success", "Database setup complete.")
         main_menu()
-        root.withdraw()
     except mysql.connector.Error as err:
         messagebox.showerror("Error", f"An error occurred: {err}")
 
 def main_menu():
+    root.withdraw()
     main_menu = tkinter.Toplevel(root)
     main_menu.title("Main Menu")
 
@@ -35,20 +35,50 @@ def main_menu():
     window_height = 300
     screen_width = main_menu.winfo_screenwidth()
     screen_height = main_menu.winfo_screenheight()
-    center_x = int(screen_width/2 - window_width/2)
-    center_y = int(screen_height/2 - window_height/2)
+    center_x = int(screen_width / 2 - window_width / 2)
+    center_y = int(screen_height / 2 - window_height / 2)
+
     main_menu.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
     main_menu.minsize(window_width, window_height)
+
     main_menu.configure(bg='#f0f0f0')
 
-    btn_admin = tkinter.Button(main_menu, text="Admin", bg='#4a7abc', fg='white')
+    button_frame = tkinter.Frame(main_menu, bg='#f0f0f0')
+    button_frame.pack(pady=50)
+
+    button_style = {
+        'bg': '#007acc',
+        'fg': 'white',
+        'font': ('Helvetica', 13, 'bold'),
+        'width': 15,
+        'height': 2,
+        'relief': tkinter.RAISED,
+        'borderwidth': 2,
+        'cursor': 'hand2',
+    }
+
+    def on_enter(e, btn):
+        btn['background'] = '#00ccb8'
+
+    def on_leave(e, btn):
+        btn['background'] = '#007acc'
+
+    btn_admin = tkinter.Button(button_frame, text="ADMIN", **button_style)
     btn_admin.pack(pady=10)
+    btn_admin.bind("<Enter>", lambda e, btn=btn_admin: on_enter(e, btn))
+    btn_admin.bind("<Leave>", lambda e, btn=btn_admin: on_leave(e, btn))
 
-    btn_data_entry = tkinter.Button(main_menu, text="Data Entry", bg='#4a7abc', fg='white')
+    btn_data_entry = tkinter.Button(button_frame, text="DATA ENTRY", **button_style)
     btn_data_entry.pack(pady=10)
+    btn_data_entry.bind("<Enter>", lambda e, btn=btn_data_entry: on_enter(e, btn))
+    btn_data_entry.bind("<Leave>", lambda e, btn=btn_data_entry: on_leave(e, btn))
 
-    btn_guest = tkinter.Button(main_menu, text="Guest", bg='#4a7abc', fg='white')
+    btn_guest = tkinter.Button(button_frame, text="GUEST", **button_style)
     btn_guest.pack(pady=10)
+    btn_guest.bind("<Enter>", lambda e, btn=btn_guest: on_enter(e, btn))
+    btn_guest.bind("<Leave>", lambda e, btn=btn_guest: on_leave(e, btn))
+
+    button_frame.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
 
 root = tkinter.Tk()
