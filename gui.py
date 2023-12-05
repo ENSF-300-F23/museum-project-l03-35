@@ -2,7 +2,7 @@ import tkinter
 import mysql.connector
 from tkinter import messagebox
 
-def connect_and_execute():
+def connect_and_execute(event=None):
     user_name = entry_user.get()
     password = entry_pass.get()
     try:
@@ -22,8 +22,34 @@ def connect_and_execute():
         cursor.close()
         conn.close()
         messagebox.showinfo("Success", "Database setup complete.")
+        main_menu()
+        root.withdraw()
     except mysql.connector.Error as err:
         messagebox.showerror("Error", f"An error occurred: {err}")
+
+def main_menu():
+    main_menu = tkinter.Toplevel(root)
+    main_menu.title("Main Menu")
+
+    window_width = 500
+    window_height = 300
+    screen_width = main_menu.winfo_screenwidth()
+    screen_height = main_menu.winfo_screenheight()
+    center_x = int(screen_width/2 - window_width/2)
+    center_y = int(screen_height/2 - window_height/2)
+    main_menu.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+    main_menu.minsize(window_width, window_height)
+    main_menu.configure(bg='#f0f0f0')
+
+    btn_admin = tkinter.Button(main_menu, text="Admin", bg='#4a7abc', fg='white')
+    btn_admin.pack(pady=10)
+
+    btn_data_entry = tkinter.Button(main_menu, text="Data Entry", bg='#4a7abc', fg='white')
+    btn_data_entry.pack(pady=10)
+
+    btn_guest = tkinter.Button(main_menu, text="Guest", bg='#4a7abc', fg='white')
+    btn_guest.pack(pady=10)
+
 
 root = tkinter.Tk()
 root.title("ART MUSEUM MANAGEMENT SYSTEM")
@@ -62,5 +88,8 @@ entry_pass.grid(row=1, column=1, padx=10, pady=5)
 
 button_connect = tkinter.Button(frame, text="Connect and Execute", command=connect_and_execute, bg='#4a7abc', fg='white')
 button_connect.grid(row=2, column=0, columnspan=2, pady=20)
+
+root.bind_all('<Return>', connect_and_execute)
+entry_user.focus_set()
 
 root.mainloop()
