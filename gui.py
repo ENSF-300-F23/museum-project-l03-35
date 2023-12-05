@@ -2,6 +2,7 @@ import tkinter
 import mysql.connector
 from tkinter import messagebox
 
+
 def connect_and_execute(event=None):
     user_name = entry_user.get()
     password = entry_pass.get()
@@ -115,20 +116,105 @@ def calculate_center(window, width, height):
     return center_x, center_y
 
 def display_artists(window):
-    # Logic to fetch and display artists and their art
-    pass
+    try:
+        conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
+        cursor = conn.cursor()
+        query = "SELECT * FROM Artists"
+        cursor.execute(query)
+        artists = cursor.fetchall()
+        display_window = tkinter.Toplevel(window)
+        display_window.title("Artists")
+        for artist in artists:
+            artist_info = f"ID: {artist[0]}, Name: {artist[1]}, Birth Year: {artist[2]}, Nationality: {artist[3]}"
+            label = tkinter.Label(display_window, text=artist_info)
+            label.pack()
+        cursor.close()
+        conn.close()
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+
 
 def view_collection(window):
-    # Logic to fetch and display artworks in a collection
-    pass
+    try:
+        conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
+        cursor = conn.cursor()
+        query = "SELECT * FROM Artworks"
+        cursor.execute(query)
+        artworks = cursor.fetchall()
+        display_window = tkinter.Toplevel(window)
+        display_window.title("Artworks")
+        for artwork in artworks:
+            artwork_info = f"ID: {artwork[0]}, Title: {artwork[1]}, Artist ID: {artwork[2]}, Year: {artwork[3]}, Medium: {artwork[4]}, Collection: {artwork[5]}, Category: {artwork[6]}, Status: {artwork[7]}"
+            label = tkinter.Label(display_window, text=artwork_info)
+            label.pack()
+        cursor.close()
+        conn.close()
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+
 
 def borrowed_art(window):
-    # Logic to fetch and display borrowed art
-    pass
+    try:
+        conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
+        cursor = conn.cursor()
+        query = "SELECT * FROM Artworks WHERE Status = 'Borrowed'"
+        cursor.execute(query)
+        borrowed_artworks = cursor.fetchall()
+        display_window = tkinter.Toplevel(window)
+        display_window.title("Borrowed Artworks")
+        for artwork in borrowed_artworks:
+            artwork_info = f"ID: {artwork[0]}, Title: {artwork[1]}, Artist ID: {artwork[2]}, Year: {artwork[3]}, Medium: {artwork[4]}, Collection: {artwork[5]}, Category: {artwork[6]}, Status: {artwork[7]}"
+            label = tkinter.Label(display_window, text=artwork_info)
+            label.pack()
+        cursor.close()
+        conn.close()
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", f"Database error: {err}")
 
-def view_all(window):
-    # Logic to fetch and display all data
-    pass
+
+def view_all(parent_window):
+    try:
+        # Connect to the database
+        conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
+        cursor = conn.cursor()
+
+        # Create a new pop-up window as a child of the parent window
+        display_window = tkinter.Toplevel(parent_window)
+        display_window.title("All Museum Data")
+        display_window.geometry("600x400")  # Adjust size as needed
+
+        # Adding a scrollbar
+        scrollbar = tkinter.Scrollbar(display_window)
+        scrollbar.pack(side="right", fill="y")
+
+        # Text area for data display
+        text_area = tkinter.Text(display_window, yscrollcommand=scrollbar.set)
+        text_area.pack(fill="both", expand=True)
+        scrollbar.config(command=text_area.yview)
+
+        # Fetch and display Artists data
+        cursor.execute("SELECT * FROM Artists")
+        artists = cursor.fetchall()
+        text_area.insert(tkinter.END, "Artists:\n")
+        for artist in artists:
+            artist_info = f"ID: {artist[0]}, Name: {artist[1]}, Birth Year: {artist[2]}, Nationality: {artist[3]}\n"
+            text_area.insert(tkinter.END, artist_info)
+        text_area.insert(tkinter.END, "\n")
+
+        # Fetch and display Artworks data
+        cursor.execute("SELECT * FROM Artworks")
+        artworks = cursor.fetchall()
+        text_area.insert(tkinter.END, "Artworks:\n")
+        for artwork in artworks:
+            artwork_info = f"ID: {artwork[0]}, Title: {artwork[1]}, Artist ID: {artwork[2]}, Year: {artwork[3]}, Medium: {artwork[4]}, Collection: {artwork[5]}, Category: {artwork[6]}, Status: {artwork[7]}\n"
+            text_area.insert(tkinter.END, artwork_info)
+
+        # Close cursor and connection
+        cursor.close()
+        conn.close()
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+
 
 def close_all_windows():
     root.destroy()
