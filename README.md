@@ -5,7 +5,7 @@
 - Group members and their roles :
       Mohit Kaila -> Making the Python Application and populating the database 
       Shalin Wickremeratna -> EER Diagram and Relational Data Model
-      Rajdeep das -> Helping populating the database
+      Rajdeep Das -> Helping populating the database
 
 
 - Important info :
