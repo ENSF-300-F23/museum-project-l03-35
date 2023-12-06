@@ -413,12 +413,12 @@ def data_entry_interface():
     frame_buttons.grid_columnconfigure(1, weight=1)
 
 def artists_data_entry(parent_window):
-    # Create a new window for artist data entry
+    
     artist_entry_window = tkinter.Toplevel(parent_window)
     artist_entry_window.title("Artist Data Entry")
     artist_entry_window.geometry("800x450")
 
-    # Create main frames for layout
+    
     top_frame = tkinter.Frame(artist_entry_window)
     top_frame.pack(side="top", fill="x")
 
@@ -428,12 +428,9 @@ def artists_data_entry(parent_window):
     bottom_frame = tkinter.Frame(artist_entry_window)
     bottom_frame.pack(side="bottom", fill="x")
 
-    # Add widgets to the top frame
+   
     tkinter.Label(top_frame, text="Artist Information", font=("Arial", 16)).pack(side="left")
-    # ... Add more widgets as needed
-
-    # Add entry widgets and labels to the middle frame
-    # For example: Artist ID, Name, Birth Year, Nationality
+  
     tkinter.Label(middle_frame, text="Artist ID").grid(row=0, column=0, padx=5, pady=5)
     artist_id_entry = tkinter.Entry(middle_frame)
     artist_id_entry.grid(row=0, column=1, padx=5, pady=5)
@@ -450,7 +447,7 @@ def artists_data_entry(parent_window):
     nationality_entry = tkinter.Entry(middle_frame)
     nationality_entry.grid(row=3, column=1, padx=5, pady=5)
 
-    # Add buttons to the bottom frame
+    
     add_button = tkinter.Button(bottom_frame, text="Add", command=lambda: add_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry, artist_tree), **button_style)
     add_button.pack(side="left", padx=10)
     add_button.bind("<Enter>", lambda e, btn=add_button: on_enter(e, btn))
@@ -521,7 +518,7 @@ def add_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry,
         conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
         cursor = conn.cursor()
         
-        # Create the insert SQL command
+        
         sql = "INSERT INTO Artists (ArtistID, Name, BirthYear, Nationality) VALUES (%s, %s, %s, %s)"
         values = (artist_id, name, birth_year, nationality)
         
@@ -536,18 +533,18 @@ def add_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry,
     fetch_artists_data(artist_tree)
 
 def update_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry, artist_tree):
-    # Get the artist data from the entry fields
+    
     artist_id = artist_id_entry.get()
     name = name_entry.get()
     birth_year = birth_year_entry.get()
     nationality = nationality_entry.get()
 
-    # Connect to the database and update the artist details
+    
     try:
         conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
         cursor = conn.cursor()
 
-        # Create the update SQL command
+        
         sql = "UPDATE Artists SET Name=%s, BirthYear=%s, Nationality=%s WHERE ArtistID=%s"
         values = (name, birth_year, nationality, artist_id)
         
@@ -563,15 +560,15 @@ def update_artist(artist_id_entry, name_entry, birth_year_entry, nationality_ent
 
 
 def delete_artist(artist_id_entry, artist_tree):
-    # Get the artist ID from the entry field
+    
     artist_id = artist_id_entry.get()
 
-    # Connect to the database and delete the artist
+    
     try:
         conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
         cursor = conn.cursor()
 
-        # Create the delete SQL command
+        
         sql = "DELETE FROM Artists WHERE ArtistID=%s"
         values = (artist_id,)
         
