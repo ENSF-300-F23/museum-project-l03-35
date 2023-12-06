@@ -3,12 +3,14 @@
 ## To Do list:
 
 - Group members and their roles :
+
       Mohit Kaila -> Making the Python Application and populating the database 
       Shalin Wickremeratna -> EER Diagram and Relational Data Model
       Rajdeep Das -> Helping populating the database
 
 
 - Important info :
+
       Make sure the SQL server is running and the user inputs the correct username and password connected to the server
 
   
