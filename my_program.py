@@ -588,8 +588,181 @@ def reset_entries(*entries):
         entry.delete(0, 'end')
     
 
-def artworks_data_entry():
-    pass
+def artworks_data_entry(parent_window):
+    
+    artwork_entry_window = tkinter.Toplevel(parent_window)
+    artwork_entry_window.title("Artwork Data Entry")
+    artwork_entry_window.geometry("800x600")
+
+    top_frame = tkinter.Frame(artwork_entry_window)
+    top_frame.pack(side="top", fill="x")
+
+    middle_frame = tkinter.Frame(artwork_entry_window)
+    middle_frame.pack(fill="x")
+
+    bottom_frame = tkinter.Frame(artwork_entry_window)
+    bottom_frame.pack(side="bottom", fill="x")
+
+    tkinter.Label(top_frame, text="Artwork Information", font=("Arial", 16)).pack(side="left")
+
+    tkinter.Label(middle_frame, text="Artwork ID").grid(row=0, column=0, padx=5, pady=5)
+    artwork_id_entry = tkinter.Entry(middle_frame)
+    artwork_id_entry.grid(row=0, column=1, padx=5, pady=5)
+
+    tkinter.Label(middle_frame, text="Title").grid(row=1, column=0, padx=5, pady=5)
+    title_entry = tkinter.Entry(middle_frame)
+    title_entry.grid(row=1, column=1, padx=5, pady=5)
+
+    tkinter.Label(middle_frame, text="Artist ID").grid(row=2, column=0, padx=5, pady=5)
+    artist_id_entry = tkinter.Entry(middle_frame)
+    artist_id_entry.grid(row=2, column=1, padx=5, pady=5)
+
+    tkinter.Label(middle_frame, text="Creation Year").grid(row=3, column=0, padx=5, pady=5)
+    creation_year_entry = tkinter.Entry(middle_frame)
+    creation_year_entry.grid(row=3, column=1, padx=5, pady=5)
+
+    tkinter.Label(middle_frame, text="Medium").grid(row=4, column=0, padx=5, pady=5)
+    medium_entry = tkinter.Entry(middle_frame)
+    medium_entry.grid(row=4, column=1, padx=5, pady=5)
+
+    tkinter.Label(middle_frame, text="Collection Name").grid(row=5, column=0, padx=5, pady=5)
+    collection_name_entry = tkinter.Entry(middle_frame)
+    collection_name_entry.grid(row=5, column=1, padx=5, pady=5)
+
+    tkinter.Label(middle_frame, text="Category").grid(row=6, column=0, padx=5, pady=5)
+    category_entry = tkinter.Entry(middle_frame)
+    category_entry.grid(row=6, column=1, padx=5, pady=5)
+
+    tkinter.Label(middle_frame, text="Status").grid(row=7, column=0, padx=5, pady=5)
+    status_entry = tkinter.Entry(middle_frame)
+    status_entry.grid(row=7, column=1, padx=5, pady=5)
+
+    add_button = tkinter.Button(bottom_frame, text="Add", command=lambda: add_artwork(artwork_id_entry, title_entry, artist_id_entry, creation_year_entry, medium_entry, collection_name_entry, category_entry, status_entry, artwork_tree), **button_style)
+    add_button.pack(side="left", padx=10)
+    add_button.bind("<Enter>", lambda e, btn=add_button: on_enter(e, btn))
+    add_button.bind("<Leave>", lambda e, btn=add_button: on_leave(e, btn))
+
+    update_button = tkinter.Button(bottom_frame, text="Update", command=lambda: update_artwork(artwork_id_entry, title_entry, artist_id_entry, creation_year_entry, medium_entry, collection_name_entry, category_entry, status_entry, artwork_tree), **button_style)
+    update_button.pack(side="left", padx=10)
+    update_button.bind("<Enter>", lambda e, btn=update_button: on_enter(e, btn))
+    update_button.bind("<Leave>", lambda e, btn=update_button: on_leave(e, btn))
+
+    delete_button = tkinter.Button(bottom_frame, text="Delete", command=lambda: delete_artwork(artwork_id_entry, artwork_tree), **button_style)
+    delete_button.pack(side="left", padx=10)
+    delete_button.bind("<Enter>", lambda e, btn=delete_button: on_enter(e, btn))
+    delete_button.bind("<Leave>", lambda e, btn=delete_button: on_leave(e, btn))
+
+    reset_button = tkinter.Button(bottom_frame, text="Reset", command=lambda: reset_entries(artwork_id_entry, title_entry, artist_id_entry, creation_year_entry, medium_entry, collection_name_entry, category_entry, status_entry), **button_style)
+    reset_button.pack(side="left", padx=10)
+    reset_button.bind("<Enter>", lambda e, btn=reset_button: on_enter(e, btn))
+    reset_button.bind("<Leave>", lambda e, btn=reset_button: on_leave(e, btn))
+
+    exit_button = tkinter.Button(bottom_frame, text="Exit", command=artwork_entry_window.destroy, **button_style)
+    exit_button.pack(side="left", padx=10)
+    exit_button.bind("<Enter>", lambda e, btn=exit_button: on_enter(e, btn))
+    exit_button.bind("<Leave>", lambda e, btn=exit_button: on_leave(e, btn))
+
+    artwork_tree = ttk.Treeview(middle_frame, columns=("ArtworkID", "Title", "ArtistID", "CreationYear", "Medium", "CollectionName", "Category", "Status"), show='headings', height=8)
+    artwork_tree.grid(row=8, column=0, columnspan=2, pady=10, padx=10, sticky="ew")
+
+    artwork_tree.heading("ArtworkID", text="Artwork ID", anchor='center')
+    artwork_tree.heading("Title", text="Title", anchor='center')
+    artwork_tree.heading("ArtistID", text="Artist ID", anchor='center')
+    artwork_tree.heading("CreationYear", text="Creation Year", anchor='center')
+    artwork_tree.heading("Medium", text="Medium", anchor='center')
+    artwork_tree.heading("CollectionName", text="Collection Name", anchor='center')
+    artwork_tree.heading("Category", text="Category", anchor='center')
+    artwork_tree.heading("Status", text="Status", anchor='center')
+
+    artwork_tree.column("ArtworkID", width=80, anchor='center')
+    artwork_tree.column("Title", width=150, anchor='center')
+    artwork_tree.column("ArtistID", width=80, anchor='center')
+    artwork_tree.column("CreationYear", width=80, anchor='center')
+    artwork_tree.column("Medium", width=80, anchor='center')
+    artwork_tree.column("CollectionName", width=150, anchor='center')
+    artwork_tree.column("Category", width=100, anchor='center')
+    artwork_tree.column("Status", width=80, anchor='center')
+
+    populate_artworks_tree(artwork_tree)
+
+def add_artwork(artwork_id_entry, title_entry, artist_id_entry, creation_year_entry, medium_entry, collection_name_entry, category_entry, status_entry, artwork_tree):
+    # Get values from the entry fields
+    artwork_id = artwork_id_entry.get()
+    title = title_entry.get()
+    artist_id = artist_id_entry.get()
+    creation_year = creation_year_entry.get()
+    medium = medium_entry.get()
+    collection_name = collection_name_entry.get()
+    category = category_entry.get()
+    status = status_entry.get()
+
+    # Validate input (add your validation logic here)
+
+    # Insert the artwork data into the database
+    # You'll need to write the SQL query and execute it here
+
+    # Clear the entry fields
+    reset_entries(artwork_id_entry, title_entry, artist_id_entry, creation_year_entry, medium_entry, collection_name_entry, category_entry, status_entry)
+
+    # Refresh the artworks treeview
+    populate_artworks_tree(artwork_tree)
+
+def update_artwork(artwork_id_entry, title_entry, artist_id_entry, creation_year_entry, medium_entry, collection_name_entry, category_entry, status_entry, artwork_tree):
+    # Get values from the entry fields
+    artwork_id = artwork_id_entry.get()
+    title = title_entry.get()
+    artist_id = artist_id_entry.get()
+    creation_year = creation_year_entry.get()
+    medium = medium_entry.get()
+    collection_name = collection_name_entry.get()
+    category = category_entry.get()
+    status = status_entry.get()
+
+    # Validate input (add your validation logic here)
+
+    # Update the artwork data in the database
+    # You'll need to write the SQL query and execute it here
+
+    # Clear the entry fields
+    reset_entries(artwork_id_entry, title_entry, artist_id_entry, creation_year_entry, medium_entry, collection_name_entry, category_entry, status_entry)
+
+    # Refresh the artworks treeview
+    populate_artworks_tree(artwork_tree)
+
+def delete_artwork(artwork_id_entry, artwork_tree):
+    # Get the artwork ID to delete
+    artwork_id = artwork_id_entry.get()
+
+    # Validate input (add your validation logic here)
+
+    # Delete the artwork from the database
+    # You'll need to write the SQL query and execute it here
+
+    # Clear the entry field
+    reset_entries(artwork_id_entry)
+
+    # Refresh the artworks treeview
+    populate_artworks_tree(artwork_tree)
+
+def reset_entries(*entries):
+    for entry in entries:
+        entry.delete(0, "end")
+
+def populate_artworks_tree(artwork_tree):
+    # Clear existing items in the treeview
+    for item in artwork_tree.get_children():
+        artwork_tree.delete(item)
+
+    # Fetch artwork data from the database and populate the treeview
+    # You'll need to write the SQL query and retrieve data here
+    # Then, for each artwork, insert it into the treeview using "artwork_tree.insert(...)"
+
+# Usage example:
+# Call artworks_data_entry(root) where "root" is your tkinter main window
+
+
+
+
 
 
 root = tkinter.Tk()
