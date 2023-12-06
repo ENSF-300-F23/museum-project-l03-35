@@ -34,19 +34,46 @@ JOIN Artists ON Artworks.ArtistID = Artists.ArtistID;
 
 -- 6
 
+
 DELIMITER //
 
-CREATE TRIGGER LogArtistNameChange AFTER UPDATE ON Artists FOR EACH ROW
+CREATE PROCEDURE AddOldBirthYearColumn()
 BEGIN
-    IF OLD.Name <> NEW.Name THEN
-        INSERT INTO ArtistNameChangeLog (ArtistID, OldName, NewName)
-        VALUES (NEW.ArtistID, OLD.Name, NEW.Name);
+    IF NOT EXISTS (
+        SELECT 1
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_NAME = 'Artists'
+        AND COLUMN_NAME = 'OldBirthYear'
+    ) THEN
+        ALTER TABLE Artists
+        ADD COLUMN OldBirthYear INT;
     END IF;
 END;
 
 //
-
 DELIMITER ;
+
+
+CALL AddOldBirthYearColumn();
+
+
+DROP TRIGGER IF EXISTS ArtistBirthYearUpdate;
+
+
+DELIMITER //
+
+CREATE TRIGGER ArtistBirthYearUpdate
+BEFORE UPDATE ON Artists
+FOR EACH ROW
+BEGIN
+    IF OLD.BirthYear <> NEW.BirthYear THEN
+        SET NEW.OldBirthYear = OLD.BirthYear;
+    END IF;
+END;
+
+//
+DELIMITER ;
+
 
 -- 7
 
@@ -56,9 +83,9 @@ CREATE TRIGGER DeleteArtistOnStatusUpdate
 AFTER UPDATE ON Artworks
 FOR EACH ROW
 BEGIN
-    -- Check if the Status column is updated to a specific value (e.g., 'DeleteArtist')
+    
     IF NEW.Status = 'DeleteArtist' THEN
-        -- Delete the artist record with the corresponding ArtistID
+        
         DELETE FROM Artists WHERE ArtistID = NEW.ArtistID;
     END IF;
 END;
