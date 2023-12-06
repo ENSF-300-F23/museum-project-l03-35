@@ -56,3 +56,24 @@ VALUES
 ('Pysche Revived by Cupids Kiss', 14236, 1787, 'Marbe', 'SCULPTURES', 'Sculpture', 'Owned');
 
 
+DROP ROLE IF EXISTS `admin`, `data_entry`;
+DROP USER IF EXISTS 'mohit'@'localhost';
+DROP USER IF EXISTS 'shalin'@'localhost';
+
+CREATE ROLE 'admin';
+CREATE ROLE 'data_entry';
+
+GRANT ALL PRIVILEGES ON ArtCollection.* TO 'admin';
+GRANT SELECT, INSERT, UPDATE ON ArtCollection.* TO 'data_entry';
+
+CREATE USER 'mohit'@'localhost' IDENTIFIED BY 'mohit';
+CREATE USER 'shalin'@'localhost' IDENTIFIED WITH mysql_native_password BY 'shalin';
+
+GRANT 'admin' TO 'mohit'@'localhost';
+GRANT 'data_entry' TO 'shalin'@'localhost';
+
+SET DEFAULT ROLE 'admin' TO 'mohit'@'localhost';
+SET DEFAULT ROLE 'data_entry' TO 'shalin'@'localhost';
+
+FLUSH PRIVILEGES;
+
