@@ -451,29 +451,72 @@ def artists_data_entry(parent_window):
     nationality_entry.grid(row=3, column=1, padx=5, pady=5)
 
     # Add buttons to the bottom frame
-    add_button = tkinter.Button(bottom_frame, text="Add", command=lambda: add_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry))
-    add_button.pack(side="left", padx=5, pady=5)
+    add_button = tkinter.Button(bottom_frame, text="Add", **button_style)
+    add_button.pack(side="left", padx=10)
+    add_button.bind("<Enter>", lambda e, btn=add_button: on_enter(e, btn))
+    add_button.bind("<Leave>", lambda e, btn=add_button: on_leave(e, btn))
 
-    update_button = tkinter.Button(bottom_frame, text="Update", command=lambda: update_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry))
-    update_button.pack(side="left", padx=5, pady=5)
+    update_button = tkinter.Button(bottom_frame, text="Update", **button_style)
+    update_button.pack(side="left", padx=10)
+    update_button.bind("<Enter>", lambda e, btn=update_button: on_enter(e, btn))
+    update_button.bind("<Leave>", lambda e, btn=update_button: on_leave(e, btn))
 
-    delete_button = tkinter.Button(bottom_frame, text="Delete", command=lambda: delete_artist(artist_id_entry))
-    delete_button.pack(side="left", padx=5, pady=5)
+    delete_button = tkinter.Button(bottom_frame, text="Delete", **button_style)
+    delete_button.pack(side="left", padx=10)
+    delete_button.bind("<Enter>", lambda e, btn=delete_button: on_enter(e, btn))
+    delete_button.bind("<Leave>", lambda e, btn=delete_button: on_leave(e, btn))
 
-    reset_button = tkinter.Button(bottom_frame, text="Reset", command=lambda: reset_entries(artist_id_entry, name_entry, birth_year_entry, nationality_entry))
-    reset_button.pack(side="left", padx=5, pady=5)
+    reset_button = tkinter.Button(bottom_frame, text="Reset", **button_style)
+    reset_button.pack(side="left", padx=10)
+    reset_button.bind("<Enter>", lambda e, btn=reset_button: on_enter(e, btn))
+    reset_button.bind("<Leave>", lambda e, btn=reset_button: on_leave(e, btn))
 
-    exit_button = tkinter.Button(bottom_frame, text="Exit", command=artist_entry_window.destroy)
-    exit_button.pack(side="left", padx=5, pady=5)
+    exit_button = tkinter.Button(bottom_frame, text="Exit", **button_style, command=artist_entry_window.destroy)
+    exit_button.pack(side="left", padx=10)
+    exit_button.bind("<Enter>", lambda e, btn=exit_button: on_enter(e, btn))
+    exit_button.bind("<Leave>", lambda e, btn=exit_button: on_leave(e, btn))
+
+
+    artist_tree = ttk.Treeview(middle_frame, columns=("ArtistID", "Name", "BirthYear", "Nationality"), show='headings', height=8)
+    artist_tree.grid(row=4, column=0, columnspan=2, pady=10, padx=10, sticky="ew")
+
+    artist_tree.heading("ArtistID", text="Artist ID",anchor='center')
+    artist_tree.heading("Name", text="Name",anchor='center')
+    artist_tree.heading("BirthYear", text="Birth Year",anchor='center')
+    artist_tree.heading("Nationality", text="Nationality",anchor='center')
+
+    artist_tree.column("ArtistID", anchor="center")
+    artist_tree.column("Name", anchor="center")
+    artist_tree.column("BirthYear", anchor="center")
+    artist_tree.column("Nationality", anchor="center")
+
+    fetch_artists_data(artist_tree)
+
+def fetch_artists_data(tree):
+    try:
+        conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
+        cursor = conn.cursor()
+        cursor.execute("SELECT ArtistID, Name, BirthYear, Nationality FROM Artists")
+        rows = cursor.fetchall()
+
+        for i in tree.get_children():
+            tree.delete(i)
+        for row in rows:
+            tree.insert('', 'end', values=row)
+
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+    finally:
+        cursor.close()
+        conn.close()
 
 def add_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry):
-    # Get the artist data from the entry fields
     artist_id = artist_id_entry.get()
     name = name_entry.get()
     birth_year = birth_year_entry.get()
     nationality = nationality_entry.get()
 
-    # Connect to the database and insert the new artist
+
     try:
         conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
         cursor = conn.cursor()
@@ -542,6 +585,7 @@ def delete_artist(artist_id_entry):
 def reset_entries(*entries):
     for entry in entries:
         entry.delete(0, 'end')
+    
 
 def artworks_data_entry():
     pass
