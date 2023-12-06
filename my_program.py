@@ -64,7 +64,7 @@ def main_menu():
     button_frame = tkinter.Frame(main_menu, bg='#f0f0f0')
     button_frame.pack(pady=50)
 
-    btn_admin = tkinter.Button(button_frame, text="ADMIN", **button_style)
+    btn_admin = tkinter.Button(button_frame, text="ADMIN", command=admin_interface, **button_style)
     btn_admin.pack(pady=10)
     btn_admin.bind("<Enter>", lambda e, btn=btn_admin: on_enter(e, btn))
     btn_admin.bind("<Leave>", lambda e, btn=btn_admin: on_leave(e, btn))
@@ -285,6 +285,77 @@ def view_all(parent_window):
         conn.close()
     except mysql.connector.Error as err:
         messagebox.showerror("Error", f"Database error: {err}")
+
+def admin_interface():
+    admin_window = tkinter.Toplevel(root)
+    admin_window.title("Admin Interface")
+    window_width, window_height = 600, 400
+    center_x, center_y = calculate_center(admin_window, window_width, window_height)
+    admin_window.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+
+    admin_window.configure(bg='#f0f0f0')
+    label_font = ('Arial', 12)
+
+    label_sql_command = tkinter.Label(admin_window, text="Enter SQL Command:", font=label_font, bg='#f0f0f0')
+    label_sql_command.pack(pady=(20, 5))
+    text_sql_command = tkinter.Text(admin_window, height=5, width=60)
+    text_sql_command.pack()
+    btn_execute_command = tkinter.Button(admin_window, text="Execute Command", command=lambda: execute_sql_command(text_sql_command.get("1.0", tkinter.END)), **button_style)
+    btn_execute_command.pack(pady=10)
+
+    label_sql_file = tkinter.Label(admin_window, text="SQL Script File Path:", font=label_font, bg='#f0f0f0')
+    label_sql_file.pack(pady=(20, 5))
+    entry_sql_file = tkinter.Entry(admin_window, width=50)
+    entry_sql_file.pack()
+    btn_run_script = tkinter.Button(admin_window, text="Run Script", command=lambda: run_sql_script(entry_sql_file.get()), **button_style)
+    btn_run_script.pack(pady=10)
+
+def execute_sql_command(command):
+    try:
+        conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
+        cursor = conn.cursor()
+
+        for result in cursor.execute(command, multi=True):
+            if result.with_rows:
+                results = result.fetchall()
+                output = "\n".join([", ".join(map(str, row)) for row in results])
+                messagebox.showinfo("Result", output)
+
+        conn.commit()
+        messagebox.showinfo("Success", "SQL Command(s) Executed Successfully")
+
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+    finally:
+        cursor.close()
+        if conn.is_connected():
+            conn.close()
+
+
+
+
+def run_sql_script(file_path):
+    try:
+        conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
+        cursor = conn.cursor()
+
+        with open(file_path, 'r') as file:
+            sql_script = file.read()
+            for result in cursor.execute(sql_script, multi=True):
+                if result.with_rows:
+                    result.fetchall()  
+
+        conn.commit()
+        messagebox.showinfo("Success", "SQL Script Executed Successfully")
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+    except FileNotFoundError:
+        messagebox.showerror("Error", "File not found. Please check the file path.")
+    finally:
+        cursor.close()
+        if conn.is_connected():
+            conn.close()
+
 
 
 

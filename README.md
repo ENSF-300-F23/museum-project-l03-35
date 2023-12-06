@@ -64,6 +64,7 @@
 
 
 - Important info :
+
       Make sure the SQL server is running and the user inputs the correct username and password connected to the server
 
   
