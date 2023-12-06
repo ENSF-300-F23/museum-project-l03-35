@@ -69,7 +69,7 @@ def main_menu():
     btn_admin.bind("<Enter>", lambda e, btn=btn_admin: on_enter(e, btn))
     btn_admin.bind("<Leave>", lambda e, btn=btn_admin: on_leave(e, btn))
 
-    btn_data_entry = tkinter.Button(button_frame, text="DATA ENTRY", **button_style)
+    btn_data_entry = tkinter.Button(button_frame, text="DATA ENTRY", command=data_entry_interface, **button_style)
     btn_data_entry.pack(pady=10)
     btn_data_entry.bind("<Enter>", lambda e, btn=btn_data_entry: on_enter(e, btn))
     btn_data_entry.bind("<Leave>", lambda e, btn=btn_data_entry: on_leave(e, btn))
@@ -304,8 +304,10 @@ def admin_interface():
     label_sql_command.pack(pady=(0, 5))
     text_sql_command = tkinter.Text(frame_sql_command, height=10, width=70, font=entry_font)
     text_sql_command.pack(expand=True, fill='both')
-    btn_execute_command = tkinter.Button(frame_sql_command, text="EXECUTE COMMAND", command=lambda: execute_sql_command(text_sql_command.get("1.0", tkinter.END)), **button_style)
+    btn_execute_command = tkinter.Button(frame_sql_command, text="EXECUTE ", command=lambda: execute_sql_command(text_sql_command.get("1.0", tkinter.END)), **button_style)
     btn_execute_command.pack(pady=10)
+    btn_execute_command.bind("<Enter>", lambda e, btn=btn_execute_command: on_enter(e, btn))
+    btn_execute_command.bind("<Leave>", lambda e, btn=btn_execute_command: on_leave(e, btn))
 
     frame_sql_file = tkinter.Frame(admin_window, bg='#f0f0f0')
     frame_sql_file.pack(pady=20, padx=20, fill='x')
@@ -316,6 +318,8 @@ def admin_interface():
     entry_sql_file.pack(pady=(0, 5), side=tkinter.LEFT, expand=True, fill='x')
     btn_run_script = tkinter.Button(frame_sql_file, text="RUN SCRIPT", command=lambda: run_sql_script(entry_sql_file.get()), **button_style)
     btn_run_script.pack(pady=(0, 5), side=tkinter.LEFT)
+    btn_run_script.bind("<Enter>", lambda e, btn=btn_run_script: on_enter(e, btn))
+    btn_run_script.bind("<Leave>", lambda e, btn=btn_run_script: on_leave(e, btn))
 
 
 def execute_sql_command(command):
@@ -382,8 +386,165 @@ def run_sql_script(file_path):
         if conn.is_connected():
             conn.close()
 
+def data_entry_interface():
+    data_entry_window = tkinter.Toplevel(root)
+    data_entry_window.title("DATA ENTRY INTERFACE")
+    window_width, window_height = 500, 300  
+    center_x, center_y = calculate_center(data_entry_window, window_width, window_height)
+    data_entry_window.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+
+    data_entry_window.configure(bg='#f0f0f0')
+
+    frame_buttons = tkinter.Frame(data_entry_window, bg='#f0f0f0')
+    frame_buttons.pack(expand=True)
+
+    btn_artists = tkinter.Button(frame_buttons, text="ARTISTS", command=lambda: artists_data_entry(data_entry_window), **button_style)
+    btn_artists.grid(row=0, column=0, padx=10, pady=10)
+    btn_artists.bind("<Enter>", lambda e, btn=btn_artists: on_enter(e, btn))
+    btn_artists.bind("<Leave>", lambda e, btn=btn_artists: on_leave(e, btn))
+
+    btn_artworks = tkinter.Button(frame_buttons, text="ARTWORKS", command=lambda: artworks_data_entry(data_entry_window), **button_style)
+    btn_artworks.grid(row=0, column=1, padx=10, pady=10)
+    btn_artworks.bind("<Enter>", lambda e, btn=btn_artworks: on_enter(e, btn))
+    btn_artworks.bind("<Leave>", lambda e, btn=btn_artworks: on_leave(e, btn))
+
+    frame_buttons.grid_rowconfigure(0, weight=1)
+    frame_buttons.grid_columnconfigure(0, weight=1)
+    frame_buttons.grid_columnconfigure(1, weight=1)
+
+def artists_data_entry(parent_window):
+    # Create a new window for artist data entry
+    artist_entry_window = tkinter.Toplevel(parent_window)
+    artist_entry_window.title("Artist Data Entry")
+    artist_entry_window.geometry("800x600")
+
+    # Create main frames for layout
+    top_frame = tkinter.Frame(artist_entry_window)
+    top_frame.pack(side="top", fill="x")
+
+    middle_frame = tkinter.Frame(artist_entry_window)
+    middle_frame.pack(fill="x")
+
+    bottom_frame = tkinter.Frame(artist_entry_window)
+    bottom_frame.pack(side="bottom", fill="x")
+
+    # Add widgets to the top frame
+    tkinter.Label(top_frame, text="Artist Information", font=("Arial", 16)).pack(side="left")
+    # ... Add more widgets as needed
+
+    # Add entry widgets and labels to the middle frame
+    # For example: Artist ID, Name, Birth Year, Nationality
+    tkinter.Label(middle_frame, text="Artist ID").grid(row=0, column=0, padx=5, pady=5)
+    artist_id_entry = tkinter.Entry(middle_frame)
+    artist_id_entry.grid(row=0, column=1, padx=5, pady=5)
+
+    tkinter.Label(middle_frame, text="Name").grid(row=1, column=0, padx=5, pady=5)
+    name_entry = tkinter.Entry(middle_frame)
+    name_entry.grid(row=1, column=1, padx=5, pady=5)
+
+    tkinter.Label(middle_frame, text="Birth Year").grid(row=2, column=0, padx=5, pady=5)
+    birth_year_entry = tkinter.Entry(middle_frame)
+    birth_year_entry.grid(row=2, column=1, padx=5, pady=5)
+
+    tkinter.Label(middle_frame, text="Nationality").grid(row=3, column=0, padx=5, pady=5)
+    nationality_entry = tkinter.Entry(middle_frame)
+    nationality_entry.grid(row=3, column=1, padx=5, pady=5)
+
+    # Add buttons to the bottom frame
+    add_button = tkinter.Button(bottom_frame, text="Add", command=lambda: add_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry))
+    add_button.pack(side="left", padx=5, pady=5)
+
+    update_button = tkinter.Button(bottom_frame, text="Update", command=lambda: update_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry))
+    update_button.pack(side="left", padx=5, pady=5)
+
+    delete_button = tkinter.Button(bottom_frame, text="Delete", command=lambda: delete_artist(artist_id_entry))
+    delete_button.pack(side="left", padx=5, pady=5)
+
+    reset_button = tkinter.Button(bottom_frame, text="Reset", command=lambda: reset_entries(artist_id_entry, name_entry, birth_year_entry, nationality_entry))
+    reset_button.pack(side="left", padx=5, pady=5)
+
+    exit_button = tkinter.Button(bottom_frame, text="Exit", command=artist_entry_window.destroy)
+    exit_button.pack(side="left", padx=5, pady=5)
+
+def add_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry):
+    # Get the artist data from the entry fields
+    artist_id = artist_id_entry.get()
+    name = name_entry.get()
+    birth_year = birth_year_entry.get()
+    nationality = nationality_entry.get()
+
+    # Connect to the database and insert the new artist
+    try:
+        conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
+        cursor = conn.cursor()
+        
+        # Create the insert SQL command
+        sql = "INSERT INTO Artists (ArtistID, Name, BirthYear, Nationality) VALUES (%s, %s, %s, %s)"
+        values = (artist_id, name, birth_year, nationality)
+        
+        cursor.execute(sql, values)
+        conn.commit()
+        messagebox.showinfo("Success", "Artist added successfully")
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+    finally:
+        cursor.close()
+        conn.close()
+
+def update_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry):
+    # Get the artist data from the entry fields
+    artist_id = artist_id_entry.get()
+    name = name_entry.get()
+    birth_year = birth_year_entry.get()
+    nationality = nationality_entry.get()
+
+    # Connect to the database and update the artist details
+    try:
+        conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
+        cursor = conn.cursor()
+
+        # Create the update SQL command
+        sql = "UPDATE Artists SET Name=%s, BirthYear=%s, Nationality=%s WHERE ArtistID=%s"
+        values = (name, birth_year, nationality, artist_id)
+        
+        cursor.execute(sql, values)
+        conn.commit()
+        messagebox.showinfo("Success", "Artist updated successfully")
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+    finally:
+        cursor.close()
+        conn.close()
+
+def delete_artist(artist_id_entry):
+    # Get the artist ID from the entry field
+    artist_id = artist_id_entry.get()
+
+    # Connect to the database and delete the artist
+    try:
+        conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
+        cursor = conn.cursor()
+
+        # Create the delete SQL command
+        sql = "DELETE FROM Artists WHERE ArtistID=%s"
+        values = (artist_id,)
+        
+        cursor.execute(sql, values)
+        conn.commit()
+        messagebox.showinfo("Success", "Artist deleted successfully")
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+    finally:
+        cursor.close()
+        conn.close()
 
 
+def reset_entries(*entries):
+    for entry in entries:
+        entry.delete(0, 'end')
+
+def artworks_data_entry():
+    pass
 
 
 root = tkinter.Tk()
