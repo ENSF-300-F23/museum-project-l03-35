@@ -181,7 +181,8 @@ def view_all(parent_window):
         # Create a new pop-up window as a child of the parent window
         display_window = tkinter.Toplevel(parent_window)
         display_window.title("All Museum Data")
-        display_window.geometry("1050x800")  # Adjust size as needed
+        display_window.state('zoomed')
+        # display_window.geometry("1050x800")  # Adjust size as needed
 
         # Treeview for Artists
         artist_label = tkinter.Label(display_window, text="Artists")
@@ -189,10 +190,10 @@ def view_all(parent_window):
         artist_columns = ("ArtistID", "Name", "BirthYear", "Nationality")
         artist_tree = ttk.Treeview(display_window, columns=artist_columns, show='headings')
         # Set column headings and widths
-        artist_tree.column("ArtistID", width=70)
-        artist_tree.column("Name", width=150)
-        artist_tree.column("BirthYear", width=70)
-        artist_tree.column("Nationality", width=100)
+        artist_tree.column("ArtistID", width=70, anchor='center')
+        artist_tree.column("Name", width=150, anchor='center')
+        artist_tree.column("BirthYear", width=70, anchor='center')
+        artist_tree.column("Nationality", width=100, anchor='center')
         for col in artist_columns:
             artist_tree.heading(col, text=col)
         artist_tree.pack(expand=True, fill='both')
@@ -209,14 +210,14 @@ def view_all(parent_window):
         artwork_columns = ("ArtworkID", "Title", "ArtistID", "CreationYear", "Medium", "CollectionName", "Category", "Status")
         artwork_tree = ttk.Treeview(display_window, columns=artwork_columns, show='headings')
         # Set column headings and widths
-        artwork_tree.column("ArtworkID", width=70)
-        artwork_tree.column("Title", width=150)
-        artwork_tree.column("ArtistID", width=70)
-        artwork_tree.column("CreationYear", width=70)
-        artwork_tree.column("Medium", width=100)
-        artwork_tree.column("CollectionName", width=120)
-        artwork_tree.column("Category", width=80)
-        artwork_tree.column("Status", width=80)
+        artwork_tree.column("ArtworkID", width=70, anchor='center')
+        artwork_tree.column("Title", width=150, anchor='center')
+        artwork_tree.column("ArtistID", width=70, anchor='center')
+        artwork_tree.column("CreationYear", width=70, anchor='center')
+        artwork_tree.column("Medium", width=100, anchor='center')
+        artwork_tree.column("CollectionName", width=120, anchor='center')
+        artwork_tree.column("Category", width=80, anchor='center')
+        artwork_tree.column("Status", width=80, anchor='center')
         for col in artwork_columns:
             artwork_tree.heading(col, text=col)
         artwork_tree.pack(expand=True, fill='both')
