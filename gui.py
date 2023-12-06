@@ -64,7 +64,7 @@ def main_menu():
     button_frame = tkinter.Frame(main_menu, bg='#f0f0f0')
     button_frame.pack(pady=50)
 
-    btn_admin = tkinter.Button(button_frame, text="ADMIN",command=create_admin_login_window, **button_style)
+    btn_admin = tkinter.Button(button_frame, text="ADMIN", **button_style)
     btn_admin.pack(pady=10)
     btn_admin.bind("<Enter>", lambda e, btn=btn_admin: on_enter(e, btn))
     btn_admin.bind("<Leave>", lambda e, btn=btn_admin: on_leave(e, btn))
@@ -286,46 +286,7 @@ def view_all(parent_window):
     except mysql.connector.Error as err:
         messagebox.showerror("Error", f"Database error: {err}")
 
-def create_admin_login_window():
-    admin_login_win = tkinter.Toplevel(root)
-    admin_login_win.title("Admin Login")
-    admin_login_win.geometry("300x200")  
 
-    tkinter.Label(admin_login_win, text="Username:").pack()
-    username_entry = tkinter.Entry(admin_login_win)
-    username_entry.pack()
-
-    tkinter.Label(admin_login_win, text="Password:").pack()
-    password_entry = tkinter.Entry(admin_login_win, show="*")
-    password_entry.pack()
-
-    tkinter.Button(admin_login_win, text="Login", command=lambda: admin_login(username_entry.get(), password_entry.get())).pack()
-
-def admin_login(username, password):
-    conn = None#
-    try:
-        conn = mysql.connector.connect(host="localhost", user=username, password=password, database="ArtCollection")
-        cursor = conn.cursor()
-        cursor.execute("SELECT CURRENT_ROLE()")
-        role = cursor.fetchone()
-        if role and role[0] == 'admin':
-            messagebox.showinfo("Login Success", "Admin login successful")
-            create_admin_main_window()  # Function to create new window
-        else:
-            messagebox.showerror("Login Failed", "Invalid admin credentials")
-    except mysql.connector.Error as err:
-        messagebox.showerror("Login Failed", f"Database error: {err}")
-    finally:
-        if conn and conn.is_connected():
-            cursor.close()
-            conn.close()
-
-def create_admin_main_window():
-    admin_main_win = tkinter.Toplevel(root)
-    admin_main_win.title("Admin Main Menu")
-    admin_main_win.geometry("300x200")  # Adjust size as needed
-    # Add any admin functionalities you want here
-    tkinter.Label(admin_main_win, text="Admin Panel").pack()
 
 root = tkinter.Tk()
 root.title("ART MUSEUM MANAGEMENT SYSTEM")
