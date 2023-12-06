@@ -50,7 +50,7 @@ VALUES
 ('David', 56789, 1504, 'Marble', 'NATIONAL MUSEUMS RECOVERY' ,'Sculpture', 'Borrowed'),
 ('Ship of Fools', 47283, 1490, 'Oil on Wood', 'DRAWINGS & ENGRAVINGS', 'Painting', 'Owned'),
 ('Death of the Virgin', 47123, 1605, 'Oil on Canvas', 'DRAWINGS & ENGRAVINGS', 'Painting', 'Owned'),
-('Portrait of Alof de Wignacourt and his Page', 47123, 1607, 'Oil on Canvas', 'DRAWINGS & ENGRAVINGS', 'Painting', 'Owned'),
+('Portrait of Alof de Wignacourt', 47123, 1607, 'Oil on Canvas', 'DRAWINGS & ENGRAVINGS', 'Painting', 'Owned'),
 ('Spartacus', 81731, 1827, 'Carrara Marble', 'SCULPTURES', 'Sculpture', 'Owned'),
 ('Saint Mary Magdalene', 71321, 1515, 'Lindenwood and Polychrome', 'SCULPTURES', 'Sculpture', 'Owned'),
 ('Pysche Revived by Cupids Kiss', 14236, 1787, 'Marbe', 'SCULPTURES', 'Sculpture', 'Owned');
