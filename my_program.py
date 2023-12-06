@@ -589,176 +589,146 @@ def reset_entries(*entries):
     
 
 def artworks_data_entry(parent_window):
-    
     artwork_entry_window = tkinter.Toplevel(parent_window)
     artwork_entry_window.title("Artwork Data Entry")
-    artwork_entry_window.geometry("800x600")
+    screen_width = artwork_entry_window.winfo_screenwidth()
+    screen_height = artwork_entry_window.winfo_screenheight()
+    window_width = screen_width 
+    window_height = screen_height
+    artwork_entry_window.geometry(f"{int(window_width)}x{int(window_height)}")
 
+    # Top frame for title
     top_frame = tkinter.Frame(artwork_entry_window)
     top_frame.pack(side="top", fill="x")
 
+    # Middle frame for entries and Treeview
     middle_frame = tkinter.Frame(artwork_entry_window)
     middle_frame.pack(fill="x")
 
+    # Bottom frame for buttons
     bottom_frame = tkinter.Frame(artwork_entry_window)
     bottom_frame.pack(side="bottom", fill="x")
 
+    # Title Label
     tkinter.Label(top_frame, text="Artwork Information", font=("Arial", 16)).pack(side="left")
 
-    tkinter.Label(middle_frame, text="Artwork ID").grid(row=0, column=0, padx=5, pady=5)
-    artwork_id_entry = tkinter.Entry(middle_frame)
-    artwork_id_entry.grid(row=0, column=1, padx=5, pady=5)
+    # Entry widgets and labels
+    labels_texts = ["Artwork ID", "Title", "Artist ID", "Year", "Medium", "Collection", "Category", "Status"]
+    entries = []
+    for i, text in enumerate(labels_texts):
+        tkinter.Label(middle_frame, text=text).grid(row=i, column=0, padx=5, pady=5)
+        entry = tkinter.Entry(middle_frame)
+        entry.grid(row=i, column=1, padx=5, pady=5)
+        entries.append(entry)
 
-    tkinter.Label(middle_frame, text="Title").grid(row=1, column=0, padx=5, pady=5)
-    title_entry = tkinter.Entry(middle_frame)
-    title_entry.grid(row=1, column=1, padx=5, pady=5)
+    # Buttons for operations
+    operations = [("Add", add_artwork), ("Update", update_artwork), ("Delete", delete_artwork), ("Reset", lambda: reset_entries(*entries))]
+    for i, (text, command) in enumerate(operations):
+        button = tkinter.Button(bottom_frame, text=text, command=lambda c=command: c(*entries), **button_style)
+        button.pack(side="left", padx=10)
+        button.bind("<Enter>", lambda e, btn=button: on_enter(e, btn))
+        button.bind("<Leave>", lambda e, btn=button: on_leave(e, btn))
 
-    tkinter.Label(middle_frame, text="Artist ID").grid(row=2, column=0, padx=5, pady=5)
-    artist_id_entry = tkinter.Entry(middle_frame)
-    artist_id_entry.grid(row=2, column=1, padx=5, pady=5)
+    # Treeview for displaying artworks
+    columns = ("ArtworkID", "Title", "ArtistID", "Year", "Medium", "Collection", "Category", "Status")
+    artwork_tree = ttk.Treeview(middle_frame, columns=columns, show='headings', height=8)
+    artwork_tree.grid(row=len(labels_texts), column=0, columnspan=2, pady=10, padx=10, sticky="ew")
 
-    tkinter.Label(middle_frame, text="Creation Year").grid(row=3, column=0, padx=5, pady=5)
-    creation_year_entry = tkinter.Entry(middle_frame)
-    creation_year_entry.grid(row=3, column=1, padx=5, pady=5)
+    for col in columns:
+        artwork_tree.heading(col, text=col, anchor='center')
+        artwork_tree.column(col, anchor="center")
 
-    tkinter.Label(middle_frame, text="Medium").grid(row=4, column=0, padx=5, pady=5)
-    medium_entry = tkinter.Entry(middle_frame)
-    medium_entry.grid(row=4, column=1, padx=5, pady=5)
+    fetch_art_data(artwork_tree)
 
-    tkinter.Label(middle_frame, text="Collection Name").grid(row=5, column=0, padx=5, pady=5)
-    collection_name_entry = tkinter.Entry(middle_frame)
-    collection_name_entry.grid(row=5, column=1, padx=5, pady=5)
 
-    tkinter.Label(middle_frame, text="Category").grid(row=6, column=0, padx=5, pady=5)
-    category_entry = tkinter.Entry(middle_frame)
-    category_entry.grid(row=6, column=1, padx=5, pady=5)
+    fetch_art_data(artwork_tree)
 
-    tkinter.Label(middle_frame, text="Status").grid(row=7, column=0, padx=5, pady=5)
-    status_entry = tkinter.Entry(middle_frame)
-    status_entry.grid(row=7, column=1, padx=5, pady=5)
+def fetch_art_data(tree):
+    try:
+        conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
+        cursor = conn.cursor()
+        cursor.execute("SELECT ArtworkID, Title, ArtistID, CreationYear, Medium, CollectionName, Category, Status FROM Artworks")
+        rows = cursor.fetchall()
 
-    add_button = tkinter.Button(bottom_frame, text="Add", command=lambda: add_artwork(artwork_id_entry, title_entry, artist_id_entry, creation_year_entry, medium_entry, collection_name_entry, category_entry, status_entry, artwork_tree), **button_style)
-    add_button.pack(side="left", padx=10)
-    add_button.bind("<Enter>", lambda e, btn=add_button: on_enter(e, btn))
-    add_button.bind("<Leave>", lambda e, btn=add_button: on_leave(e, btn))
+        for i in tree.get_children():
+            tree.delete(i)
+        for row in rows:
+            tree.insert('', 'end', values=row)
 
-    update_button = tkinter.Button(bottom_frame, text="Update", command=lambda: update_artwork(artwork_id_entry, title_entry, artist_id_entry, creation_year_entry, medium_entry, collection_name_entry, category_entry, status_entry, artwork_tree), **button_style)
-    update_button.pack(side="left", padx=10)
-    update_button.bind("<Enter>", lambda e, btn=update_button: on_enter(e, btn))
-    update_button.bind("<Leave>", lambda e, btn=update_button: on_leave(e, btn))
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+    finally:
+        cursor.close()
+        conn.close()
 
-    delete_button = tkinter.Button(bottom_frame, text="Delete", command=lambda: delete_artwork(artwork_id_entry, artwork_tree), **button_style)
-    delete_button.pack(side="left", padx=10)
-    delete_button.bind("<Enter>", lambda e, btn=delete_button: on_enter(e, btn))
-    delete_button.bind("<Leave>", lambda e, btn=delete_button: on_leave(e, btn))
+def add_artwork(*entries):
+    artwork_id, title, artist_id, year, medium, collection, category, status = (e.get() for e in entries)
+    try:
+        conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
+        cursor = conn.cursor()
 
-    reset_button = tkinter.Button(bottom_frame, text="Reset", command=lambda: reset_entries(artwork_id_entry, title_entry, artist_id_entry, creation_year_entry, medium_entry, collection_name_entry, category_entry, status_entry), **button_style)
-    reset_button.pack(side="left", padx=10)
-    reset_button.bind("<Enter>", lambda e, btn=reset_button: on_enter(e, btn))
-    reset_button.bind("<Leave>", lambda e, btn=reset_button: on_leave(e, btn))
+        # Check if the ArtistID exists
+        cursor.execute("SELECT COUNT(*) FROM Artists WHERE ArtistID = %s", (artist_id,))
+        if cursor.fetchone()[0] == 0:
+            messagebox.showerror("Error", "Artist ID does not exist.")
+            return
 
-    exit_button = tkinter.Button(bottom_frame, text="Exit", command=artwork_entry_window.destroy, **button_style)
-    exit_button.pack(side="left", padx=10)
-    exit_button.bind("<Enter>", lambda e, btn=exit_button: on_enter(e, btn))
-    exit_button.bind("<Leave>", lambda e, btn=exit_button: on_leave(e, btn))
+        # Insert the new artwork
+        sql = "INSERT INTO Artworks (ArtworkID, Title, ArtistID, CreationYear, Medium, CollectionName, Category, Status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        cursor.execute(sql, (artwork_id, title, artist_id, year, medium, collection, category, status))
+        conn.commit()
+        messagebox.showinfo("Success", "Artwork added successfully")
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+    finally:
+        cursor.close()
+        conn.close()
 
-    artwork_tree = ttk.Treeview(middle_frame, columns=("ArtworkID", "Title", "ArtistID", "CreationYear", "Medium", "CollectionName", "Category", "Status"), show='headings', height=8)
-    artwork_tree.grid(row=8, column=0, columnspan=2, pady=10, padx=10, sticky="ew")
 
-    artwork_tree.heading("ArtworkID", text="Artwork ID", anchor='center')
-    artwork_tree.heading("Title", text="Title", anchor='center')
-    artwork_tree.heading("ArtistID", text="Artist ID", anchor='center')
-    artwork_tree.heading("CreationYear", text="Creation Year", anchor='center')
-    artwork_tree.heading("Medium", text="Medium", anchor='center')
-    artwork_tree.heading("CollectionName", text="Collection Name", anchor='center')
-    artwork_tree.heading("Category", text="Category", anchor='center')
-    artwork_tree.heading("Status", text="Status", anchor='center')
+def update_artwork(*entries):
+    artwork_id, title, artist_id, year, medium, collection, category, status = (e.get() for e in entries)
+    try:
+        conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
+        cursor = conn.cursor()
 
-    artwork_tree.column("ArtworkID", width=80, anchor='center')
-    artwork_tree.column("Title", width=150, anchor='center')
-    artwork_tree.column("ArtistID", width=80, anchor='center')
-    artwork_tree.column("CreationYear", width=80, anchor='center')
-    artwork_tree.column("Medium", width=80, anchor='center')
-    artwork_tree.column("CollectionName", width=150, anchor='center')
-    artwork_tree.column("Category", width=100, anchor='center')
-    artwork_tree.column("Status", width=80, anchor='center')
+        # Check if the ArtistID exists
+        cursor.execute("SELECT COUNT(*) FROM Artists WHERE ArtistID = %s", (artist_id,))
+        if cursor.fetchone()[0] == 0:
+            messagebox.showerror("Error", "Artist ID does not exist.")
+            return
 
-    populate_artworks_tree(artwork_tree)
+        # Update the artwork
+        sql = "UPDATE Artworks SET Title=%s, ArtistID=%s, CreationYear=%s, Medium=%s, CollectionName=%s, Category=%s, Status=%s WHERE ArtworkID=%s"
+        cursor.execute(sql, (title, artist_id, year, medium, collection, category, status, artwork_id))
+        conn.commit()
+        messagebox.showinfo("Success", "Artwork updated successfully")
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+    finally:
+        cursor.close()
+        conn.close()
 
-def add_artwork(artwork_id_entry, title_entry, artist_id_entry, creation_year_entry, medium_entry, collection_name_entry, category_entry, status_entry, artwork_tree):
-    # Get values from the entry fields
-    artwork_id = artwork_id_entry.get()
-    title = title_entry.get()
-    artist_id = artist_id_entry.get()
-    creation_year = creation_year_entry.get()
-    medium = medium_entry.get()
-    collection_name = collection_name_entry.get()
-    category = category_entry.get()
-    status = status_entry.get()
+def delete_artwork(*entries):
+    artwork_id = entries[0].get()
+    try:
+        conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
+        cursor = conn.cursor()
+        sql = "DELETE FROM Artworks WHERE ArtworkID=%s"
+        cursor.execute(sql, (artwork_id,))
+        conn.commit()
+        messagebox.showinfo("Success", "Artwork deleted successfully")
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", f"Database error: {err}")
+    finally:
+        cursor.close()
+        conn.close()
 
-    # Validate input (add your validation logic here)
-
-    # Insert the artwork data into the database
-    # You'll need to write the SQL query and execute it here
-
-    # Clear the entry fields
-    reset_entries(artwork_id_entry, title_entry, artist_id_entry, creation_year_entry, medium_entry, collection_name_entry, category_entry, status_entry)
-
-    # Refresh the artworks treeview
-    populate_artworks_tree(artwork_tree)
-
-def update_artwork(artwork_id_entry, title_entry, artist_id_entry, creation_year_entry, medium_entry, collection_name_entry, category_entry, status_entry, artwork_tree):
-    # Get values from the entry fields
-    artwork_id = artwork_id_entry.get()
-    title = title_entry.get()
-    artist_id = artist_id_entry.get()
-    creation_year = creation_year_entry.get()
-    medium = medium_entry.get()
-    collection_name = collection_name_entry.get()
-    category = category_entry.get()
-    status = status_entry.get()
-
-    # Validate input (add your validation logic here)
-
-    # Update the artwork data in the database
-    # You'll need to write the SQL query and execute it here
-
-    # Clear the entry fields
-    reset_entries(artwork_id_entry, title_entry, artist_id_entry, creation_year_entry, medium_entry, collection_name_entry, category_entry, status_entry)
-
-    # Refresh the artworks treeview
-    populate_artworks_tree(artwork_tree)
-
-def delete_artwork(artwork_id_entry, artwork_tree):
-    # Get the artwork ID to delete
-    artwork_id = artwork_id_entry.get()
-
-    # Validate input (add your validation logic here)
-
-    # Delete the artwork from the database
-    # You'll need to write the SQL query and execute it here
-
-    # Clear the entry field
-    reset_entries(artwork_id_entry)
-
-    # Refresh the artworks treeview
-    populate_artworks_tree(artwork_tree)
 
 def reset_entries(*entries):
     for entry in entries:
         entry.delete(0, "end")
 
-def populate_artworks_tree(artwork_tree):
-    # Clear existing items in the treeview
-    for item in artwork_tree.get_children():
-        artwork_tree.delete(item)
 
-    # Fetch artwork data from the database and populate the treeview
-    # You'll need to write the SQL query and retrieve data here
-    # Then, for each artwork, insert it into the treeview using "artwork_tree.insert(...)"
-
-# Usage example:
-# Call artworks_data_entry(root) where "root" is your tkinter main window
 
 
 
