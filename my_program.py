@@ -416,7 +416,7 @@ def artists_data_entry(parent_window):
     # Create a new window for artist data entry
     artist_entry_window = tkinter.Toplevel(parent_window)
     artist_entry_window.title("Artist Data Entry")
-    artist_entry_window.geometry("800x600")
+    artist_entry_window.geometry("800x450")
 
     # Create main frames for layout
     top_frame = tkinter.Frame(artist_entry_window)
@@ -451,17 +451,17 @@ def artists_data_entry(parent_window):
     nationality_entry.grid(row=3, column=1, padx=5, pady=5)
 
     # Add buttons to the bottom frame
-    add_button = tkinter.Button(bottom_frame, text="Add", **button_style)
+    add_button = tkinter.Button(bottom_frame, text="Add", command=lambda: add_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry, artist_tree), **button_style)
     add_button.pack(side="left", padx=10)
     add_button.bind("<Enter>", lambda e, btn=add_button: on_enter(e, btn))
     add_button.bind("<Leave>", lambda e, btn=add_button: on_leave(e, btn))
-
-    update_button = tkinter.Button(bottom_frame, text="Update", **button_style)
+    
+    update_button = tkinter.Button(bottom_frame, text="Update", command=lambda: update_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry, artist_tree), **button_style)
     update_button.pack(side="left", padx=10)
     update_button.bind("<Enter>", lambda e, btn=update_button: on_enter(e, btn))
     update_button.bind("<Leave>", lambda e, btn=update_button: on_leave(e, btn))
 
-    delete_button = tkinter.Button(bottom_frame, text="Delete", **button_style)
+    delete_button = tkinter.Button(bottom_frame, text="Delete", command=lambda: delete_artist(artist_id_entry, artist_tree), **button_style)
     delete_button.pack(side="left", padx=10)
     delete_button.bind("<Enter>", lambda e, btn=delete_button: on_enter(e, btn))
     delete_button.bind("<Leave>", lambda e, btn=delete_button: on_leave(e, btn))
@@ -510,7 +510,7 @@ def fetch_artists_data(tree):
         cursor.close()
         conn.close()
 
-def add_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry):
+def add_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry, artist_tree):
     artist_id = artist_id_entry.get()
     name = name_entry.get()
     birth_year = birth_year_entry.get()
@@ -533,8 +533,9 @@ def add_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry)
     finally:
         cursor.close()
         conn.close()
+    fetch_artists_data(artist_tree)
 
-def update_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry):
+def update_artist(artist_id_entry, name_entry, birth_year_entry, nationality_entry, artist_tree):
     # Get the artist data from the entry fields
     artist_id = artist_id_entry.get()
     name = name_entry.get()
@@ -558,8 +559,10 @@ def update_artist(artist_id_entry, name_entry, birth_year_entry, nationality_ent
     finally:
         cursor.close()
         conn.close()
+    fetch_artists_data(artist_tree)
 
-def delete_artist(artist_id_entry):
+
+def delete_artist(artist_id_entry, artist_tree):
     # Get the artist ID from the entry field
     artist_id = artist_id_entry.get()
 
@@ -580,6 +583,7 @@ def delete_artist(artist_id_entry):
     finally:
         cursor.close()
         conn.close()
+    fetch_artists_data(artist_tree)
 
 
 def reset_entries(*entries):
