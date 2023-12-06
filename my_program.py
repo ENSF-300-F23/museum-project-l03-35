@@ -288,41 +288,57 @@ def view_all(parent_window):
 
 def admin_interface():
     admin_window = tkinter.Toplevel(root)
-    admin_window.title("Admin Interface")
-    window_width, window_height = 600, 400
+    admin_window.title("ADMIN INTERFACE")
+    window_width, window_height = 800, 600  
     center_x, center_y = calculate_center(admin_window, window_width, window_height)
     admin_window.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 
     admin_window.configure(bg='#f0f0f0')
     label_font = ('Arial', 12)
+    entry_font = ('Arial', 10)
 
-    label_sql_command = tkinter.Label(admin_window, text="Enter SQL Command:", font=label_font, bg='#f0f0f0')
-    label_sql_command.pack(pady=(20, 5))
-    text_sql_command = tkinter.Text(admin_window, height=5, width=60)
-    text_sql_command.pack()
-    btn_execute_command = tkinter.Button(admin_window, text="Execute Command", command=lambda: execute_sql_command(text_sql_command.get("1.0", tkinter.END)), **button_style)
+    frame_sql_command = tkinter.Frame(admin_window, bg='#f0f0f0')
+    frame_sql_command.pack(pady=20, padx=20, fill='both', expand=True)
+
+    label_sql_command = tkinter.Label(frame_sql_command, text="ENTER THE SQL COMMAND:", font=label_font, bg='#f0f0f0')
+    label_sql_command.pack(pady=(0, 5))
+    text_sql_command = tkinter.Text(frame_sql_command, height=10, width=70, font=entry_font)
+    text_sql_command.pack(expand=True, fill='both')
+    btn_execute_command = tkinter.Button(frame_sql_command, text="EXECUTE COMMAND", command=lambda: execute_sql_command(text_sql_command.get("1.0", tkinter.END)), **button_style)
     btn_execute_command.pack(pady=10)
 
-    label_sql_file = tkinter.Label(admin_window, text="SQL Script File Path:", font=label_font, bg='#f0f0f0')
-    label_sql_file.pack(pady=(20, 5))
-    entry_sql_file = tkinter.Entry(admin_window, width=50)
-    entry_sql_file.pack()
-    btn_run_script = tkinter.Button(admin_window, text="Run Script", command=lambda: run_sql_script(entry_sql_file.get()), **button_style)
-    btn_run_script.pack(pady=10)
+    frame_sql_file = tkinter.Frame(admin_window, bg='#f0f0f0')
+    frame_sql_file.pack(pady=20, padx=20, fill='x')
+
+    label_sql_file = tkinter.Label(frame_sql_file, text="SQL SCRIPT FILE PATH:", font=label_font, bg='#f0f0f0')
+    label_sql_file.pack(pady=(0, 5), side=tkinter.LEFT)
+    entry_sql_file = tkinter.Entry(frame_sql_file, width=50, font=entry_font)
+    entry_sql_file.pack(pady=(0, 5), side=tkinter.LEFT, expand=True, fill='x')
+    btn_run_script = tkinter.Button(frame_sql_file, text="RUN SCRIPT", command=lambda: run_sql_script(entry_sql_file.get()), **button_style)
+    btn_run_script.pack(pady=(0, 5), side=tkinter.LEFT)
+
 
 def execute_sql_command(command):
     try:
         conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
         cursor = conn.cursor()
+        cursor.execute(command)
 
-        for result in cursor.execute(command, multi=True):
-            if result.with_rows:
-                results = result.fetchall()
-                output = "\n".join([", ".join(map(str, row)) for row in results])
-                messagebox.showinfo("Result", output)
+        output = ""
+        column_headers = [i[0] for i in cursor.description]
+        output += ", ".join(column_headers) + "\n"
+
+        if cursor.with_rows:
+            results = cursor.fetchall()
+            for row in results:
+                output += ", ".join(map(str, row)) + "\n"
 
         conn.commit()
-        messagebox.showinfo("Success", "SQL Command(s) Executed Successfully")
+
+        if output:
+            messagebox.showinfo("Result", output)
+        else:
+            messagebox.showinfo("Success", "SQL Command Executed Successfully")
 
     except mysql.connector.Error as err:
         messagebox.showerror("Error", f"Database error: {err}")
@@ -330,9 +346,6 @@ def execute_sql_command(command):
         cursor.close()
         if conn.is_connected():
             conn.close()
-
-
-
 
 def run_sql_script(file_path):
     try:
@@ -341,12 +354,25 @@ def run_sql_script(file_path):
 
         with open(file_path, 'r') as file:
             sql_script = file.read()
-            for result in cursor.execute(sql_script, multi=True):
-                if result.with_rows:
-                    result.fetchall()  
+
+        output = ""
+        for result in cursor.execute(sql_script, multi=True):
+            if result.with_rows:
+                column_headers = [i[0] for i in result.description]
+                output += ", ".join(column_headers) + "\n"
+
+                results = result.fetchall()
+                for row in results:
+                    output += ", ".join(map(str, row)) + "\n"
+                output += "\n"  
 
         conn.commit()
-        messagebox.showinfo("Success", "SQL Script Executed Successfully")
+
+        if output:
+            messagebox.showinfo("Result", output)
+        else:
+            messagebox.showinfo("Success", "SQL Script Executed Successfully")
+
     except mysql.connector.Error as err:
         messagebox.showerror("Error", f"Database error: {err}")
     except FileNotFoundError:
@@ -355,6 +381,7 @@ def run_sql_script(file_path):
         cursor.close()
         if conn.is_connected():
             conn.close()
+
 
 
 
