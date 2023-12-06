@@ -66,6 +66,7 @@
 - Important info :
 
       Make sure the SQL server is running and the user inputs the correct username and password connected to the server
+      Anytime if the user wishes to go back to the previous window, the user can just close the current window.
 
   
 - Include any features you have added beyond the minimum requirements in a features list
