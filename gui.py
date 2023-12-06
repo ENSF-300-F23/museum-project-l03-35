@@ -302,7 +302,7 @@ def create_admin_login_window():
     tkinter.Button(admin_login_win, text="Login", command=lambda: admin_login(username_entry.get(), password_entry.get())).pack()
 
 def admin_login(username, password):
-    conn = None
+    conn = None#
     try:
         conn = mysql.connector.connect(host="localhost", user=username, password=password, database="ArtCollection")
         cursor = conn.cursor()
