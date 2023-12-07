@@ -802,7 +802,7 @@ def reset_entries(*entries):
 
 root = tkinter.Tk()
 root.title("ART MUSEUM MANAGEMENT SYSTEM")
-#root.iconbitmap('path_to_your_icon.ico')
+root.iconbitmap('museum.ico')
 
 window_width = 500
 window_height = 300
