@@ -603,7 +603,7 @@ def artworks_data_entry(parent_window):
 
     # Middle frame for entries and Treeview
     middle_frame = tkinter.Frame(artwork_entry_window)
-    middle_frame.pack(fill="x")
+    middle_frame.pack(fill="both", expand=True)
 
     # Bottom frame for buttons
     bottom_frame = tkinter.Frame(artwork_entry_window)
@@ -613,34 +613,81 @@ def artworks_data_entry(parent_window):
     tkinter.Label(top_frame, text="Artwork Information", font=("Arial", 16)).pack(side="left")
 
     # Entry widgets and labels
-    labels_texts = ["Artwork ID", "Title", "Artist ID", "Year", "Medium", "Collection", "Category", "Status"]
-    entries = []
-    for i, text in enumerate(labels_texts):
-        tkinter.Label(middle_frame, text=text).grid(row=i, column=0, padx=5, pady=5)
-        entry = tkinter.Entry(middle_frame)
-        entry.grid(row=i, column=1, padx=5, pady=5)
-        entries.append(entry)
+    label_artwork_id = tkinter.Label(middle_frame, text="Artwork ID")
+    label_artwork_id.grid(row=0, column=0, sticky='e', padx=(10, 0))
+    entry_artwork_id = tkinter.Entry(middle_frame)
+    entry_artwork_id.grid(row=0, column=1, sticky='w', padx=(10, 0))
 
-    # Buttons for operations
-    operations = [("Add", add_artwork), ("Update", update_artwork), ("Delete", delete_artwork), ("Reset", lambda: reset_entries(*entries))]
-    for i, (text, command) in enumerate(operations):
-        button = tkinter.Button(bottom_frame, text=text, command=lambda c=command: c(*entries), **button_style)
-        button.pack(side="left", padx=10)
-        button.bind("<Enter>", lambda e, btn=button: on_enter(e, btn))
-        button.bind("<Leave>", lambda e, btn=button: on_leave(e, btn))
+    label_title = tkinter.Label(middle_frame, text="Title")
+    label_title.grid(row=1, column=0, sticky='e', padx=(10, 0))
+    entry_title = tkinter.Entry(middle_frame)
+    entry_title.grid(row=1, column=1, sticky='w', padx=(10, 0))
 
-    # Treeview for displaying artworks
+    label_artist_id = tkinter.Label(middle_frame, text="Artist ID")
+    label_artist_id.grid(row=2, column=0, sticky='e', padx=(10, 0))
+    entry_artist_id = tkinter.Entry(middle_frame)
+    entry_artist_id.grid(row=2, column=1, sticky='w', padx=(10, 0))
+
+    label_year = tkinter.Label(middle_frame, text="Year")
+    label_year.grid(row=3, column=0, sticky='e', padx=(10, 0))
+    entry_year = tkinter.Entry(middle_frame)
+    entry_year.grid(row=3, column=1, sticky='w', padx=(10, 0))
+
+    label_medium = tkinter.Label(middle_frame, text="Medium")
+    label_medium.grid(row=4, column=0, sticky='e', padx=(10, 0))
+    entry_medium = tkinter.Entry(middle_frame)
+    entry_medium.grid(row=4, column=1, sticky='w', padx=(10, 0))
+
+    label_collection = tkinter.Label(middle_frame, text="Collection")
+    label_collection.grid(row=5, column=0,sticky='e', padx=(10, 0))
+    entry_collection = tkinter.Entry(middle_frame)
+    entry_collection.grid(row=5, column=1, sticky='w', padx=(10, 0))
+
+    label_category = tkinter.Label(middle_frame, text="Category")
+    label_category.grid(row=6, column=0,sticky='e', padx=(10, 0))
+    entry_category = tkinter.Entry(middle_frame)
+    entry_category.grid(row=6, column=1, sticky='w', padx=(10, 0))
+
+    label_status = tkinter.Label(middle_frame, text="Status")
+    label_status.grid(row=7, column=0, sticky='e', padx=(10, 0))
+    entry_status = tkinter.Entry(middle_frame)
+    entry_status.grid(row=7, column=1, sticky='w', padx=(10, 0))
+
+    # Buttons
+    # Add button
+    add_button = tkinter.Button(bottom_frame, text="Add", command=lambda: add_artwork(entry_artwork_id, entry_title, entry_artist_id, entry_year, entry_medium, entry_collection, entry_category, entry_status,artwork_tree), **button_style)
+    add_button.pack(side="left", padx=10)
+
+    # Update button
+    update_button = tkinter.Button(bottom_frame, text="Update", command=lambda: update_artwork(entry_artwork_id, entry_title, entry_artist_id, entry_year, entry_medium, entry_collection, entry_category, entry_status,artwork_tree), **button_style)
+    update_button.pack(side="left", padx=10)
+
+    # Delete button
+    delete_button = tkinter.Button(bottom_frame, text="Delete", command=lambda: delete_artwork(entry_artwork_id,artwork_tree), **button_style)
+    delete_button.pack(side="left", padx=10)
+
+    # Reset button
+    reset_button = tkinter.Button(bottom_frame, text="Reset", command=lambda: reset_entries(entry_artwork_id, entry_title, entry_artist_id, entry_year, entry_medium, entry_collection, entry_category, entry_status), **button_style)
+    reset_button.pack(side="left", padx=10)
+
+    # Treeview for artworks
     columns = ("ArtworkID", "Title", "ArtistID", "Year", "Medium", "Collection", "Category", "Status")
-    artwork_tree = ttk.Treeview(middle_frame, columns=columns, show='headings', height=8)
-    artwork_tree.grid(row=len(labels_texts), column=0, columnspan=2, pady=10, padx=10, sticky="ew")
-
+    artwork_tree = ttk.Treeview(middle_frame, columns=columns, show='headings')
+    artwork_tree.grid(row=8, column=0, columnspan=2, sticky='nsew', pady=10, padx=10)
     for col in columns:
-        artwork_tree.heading(col, text=col, anchor='center')
-        artwork_tree.column(col, anchor="center")
+        artwork_tree.heading(col, text=col)
+        artwork_tree.column(col, anchor='center')
 
-    fetch_art_data(artwork_tree)
+    # Add a scrollbar
+    scrollbar = ttk.Scrollbar(middle_frame, orient='vertical', command=artwork_tree.yview)
+    scrollbar.grid(row=8, column=2, sticky='ns')
+    artwork_tree.configure(yscrollcommand=scrollbar.set)
 
+    # Make the Treeview columns fill the frame space
+    middle_frame.grid_columnconfigure(1, weight=1)
+    middle_frame.grid_rowconfigure(8, weight=1)
 
+    # Fetch initial data to display
     fetch_art_data(artwork_tree)
 
 def fetch_art_data(tree):
@@ -661,8 +708,16 @@ def fetch_art_data(tree):
         cursor.close()
         conn.close()
 
-def add_artwork(*entries):
-    artwork_id, title, artist_id, year, medium, collection, category, status = (e.get() for e in entries)
+def add_artwork(entry_artwork_id, entry_title, entry_artist_id, entry_year, entry_medium, entry_collection, entry_category, entry_status, artwork_tree):
+    # Extracting the data from the entries
+    artwork_id = entry_artwork_id.get()
+    title = entry_title.get()
+    artist_id = entry_artist_id.get()
+    year = entry_year.get()
+    medium = entry_medium.get()
+    collection = entry_collection.get()
+    category = entry_category.get()
+    status = entry_status.get()
     try:
         conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
         cursor = conn.cursor()
@@ -683,10 +738,17 @@ def add_artwork(*entries):
     finally:
         cursor.close()
         conn.close()
+    fetch_art_data(artwork_tree)
 
-
-def update_artwork(*entries):
-    artwork_id, title, artist_id, year, medium, collection, category, status = (e.get() for e in entries)
+def update_artwork(entry_artwork_id, entry_title, entry_artist_id, entry_year, entry_medium, entry_collection, entry_category, entry_status, artwork_tree):
+    artwork_id = entry_artwork_id.get()
+    title = entry_title.get()
+    artist_id = entry_artist_id.get()
+    year = entry_year.get()
+    medium = entry_medium.get()
+    collection = entry_collection.get()
+    category = entry_category.get()
+    status = entry_status.get()
     try:
         conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
         cursor = conn.cursor()
@@ -707,9 +769,10 @@ def update_artwork(*entries):
     finally:
         cursor.close()
         conn.close()
+    fetch_art_data(artwork_tree)
 
-def delete_artwork(*entries):
-    artwork_id = entries[0].get()
+def delete_artwork(entry_artwork_id, artwork_tree):
+    artwork_id = entry_artwork_id.get()
     try:
         conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
         cursor = conn.cursor()
@@ -722,6 +785,7 @@ def delete_artwork(*entries):
     finally:
         cursor.close()
         conn.close()
+    fetch_art_data(artwork_tree)
 
 
 def reset_entries(*entries):
