@@ -592,9 +592,8 @@ def artworks_data_entry(parent_window):
     artwork_entry_window = tkinter.Toplevel(parent_window)
     artwork_entry_window.title("Artwork Data Entry")
     screen_width = artwork_entry_window.winfo_screenwidth()
-    screen_height = artwork_entry_window.winfo_screenheight()
     window_width = screen_width 
-    window_height = screen_height
+    window_height = 700
     artwork_entry_window.geometry(f"{int(window_width)}x{int(window_height)}")
 
     # Top frame for title
@@ -674,9 +673,12 @@ def artworks_data_entry(parent_window):
     columns = ("ArtworkID", "Title", "ArtistID", "Year", "Medium", "Collection", "Category", "Status")
     artwork_tree = ttk.Treeview(middle_frame, columns=columns, show='headings')
     artwork_tree.grid(row=8, column=0, columnspan=2, sticky='nsew', pady=10, padx=10)
+
+# Adjusting the column widths
+    column_widths = {"ArtworkID": 80, "Title": 150, "ArtistID": 80, "Year": 60, "Medium": 100, "Collection": 100, "Category": 100, "Status": 120}
     for col in columns:
         artwork_tree.heading(col, text=col)
-        artwork_tree.column(col, anchor='center')
+        artwork_tree.column(col, anchor='center', width=column_widths[col])
 
     # Add a scrollbar
     scrollbar = ttk.Scrollbar(middle_frame, orient='vertical', command=artwork_tree.yview)
