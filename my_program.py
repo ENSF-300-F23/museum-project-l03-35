@@ -596,22 +596,22 @@ def artworks_data_entry(parent_window):
     window_height = 700
     artwork_entry_window.geometry(f"{int(window_width)}x{int(window_height)}")
 
-    # Top frame for title
+    
     top_frame = tkinter.Frame(artwork_entry_window)
     top_frame.pack(side="top", fill="x")
 
-    # Middle frame for entries and Treeview
+    
     middle_frame = tkinter.Frame(artwork_entry_window)
     middle_frame.pack(fill="both", expand=True)
 
-    # Bottom frame for buttons
+    
     bottom_frame = tkinter.Frame(artwork_entry_window)
     bottom_frame.pack(side="bottom", fill="x")
 
-    # Title Label
+    
     tkinter.Label(top_frame, text="Artwork Information", font=("Arial", 16)).pack(side="left")
 
-    # Entry widgets and labels
+    
     label_artwork_id = tkinter.Label(middle_frame, text="Artwork ID")
     label_artwork_id.grid(row=0, column=0, sticky='e', padx=(10, 0))
     entry_artwork_id = tkinter.Entry(middle_frame)
@@ -652,44 +652,43 @@ def artworks_data_entry(parent_window):
     entry_status = tkinter.Entry(middle_frame)
     entry_status.grid(row=7, column=1, sticky='w', padx=(10, 0))
 
-    # Buttons
-    # Add button
+    
     add_button = tkinter.Button(bottom_frame, text="Add", command=lambda: add_artwork(entry_artwork_id, entry_title, entry_artist_id, entry_year, entry_medium, entry_collection, entry_category, entry_status,artwork_tree), **button_style)
     add_button.pack(side="left", padx=10)
 
-    # Update button
+    
     update_button = tkinter.Button(bottom_frame, text="Update", command=lambda: update_artwork(entry_artwork_id, entry_title, entry_artist_id, entry_year, entry_medium, entry_collection, entry_category, entry_status,artwork_tree), **button_style)
     update_button.pack(side="left", padx=10)
 
-    # Delete button
+    
     delete_button = tkinter.Button(bottom_frame, text="Delete", command=lambda: delete_artwork(entry_artwork_id,artwork_tree), **button_style)
     delete_button.pack(side="left", padx=10)
 
-    # Reset button
+    
     reset_button = tkinter.Button(bottom_frame, text="Reset", command=lambda: reset_entries(entry_artwork_id, entry_title, entry_artist_id, entry_year, entry_medium, entry_collection, entry_category, entry_status), **button_style)
     reset_button.pack(side="left", padx=10)
 
-    # Treeview for artworks
+    
     columns = ("ArtworkID", "Title", "ArtistID", "Year", "Medium", "Collection", "Category", "Status")
     artwork_tree = ttk.Treeview(middle_frame, columns=columns, show='headings')
     artwork_tree.grid(row=8, column=0, columnspan=2, sticky='nsew', pady=10, padx=10)
 
-# Adjusting the column widths
+
     column_widths = {"ArtworkID": 80, "Title": 150, "ArtistID": 80, "Year": 60, "Medium": 100, "Collection": 100, "Category": 100, "Status": 120}
     for col in columns:
         artwork_tree.heading(col, text=col)
         artwork_tree.column(col, anchor='center', width=column_widths[col])
 
-    # Add a scrollbar
+    
     scrollbar = ttk.Scrollbar(middle_frame, orient='vertical', command=artwork_tree.yview)
     scrollbar.grid(row=8, column=2, sticky='ns')
     artwork_tree.configure(yscrollcommand=scrollbar.set)
 
-    # Make the Treeview columns fill the frame space
+    
     middle_frame.grid_columnconfigure(1, weight=1)
     middle_frame.grid_rowconfigure(8, weight=1)
 
-    # Fetch initial data to display
+    
     fetch_art_data(artwork_tree)
 
 def fetch_art_data(tree):
@@ -711,7 +710,7 @@ def fetch_art_data(tree):
         conn.close()
 
 def add_artwork(entry_artwork_id, entry_title, entry_artist_id, entry_year, entry_medium, entry_collection, entry_category, entry_status, artwork_tree):
-    # Extracting the data from the entries
+    
     artwork_id = entry_artwork_id.get()
     title = entry_title.get()
     artist_id = entry_artist_id.get()
@@ -724,13 +723,13 @@ def add_artwork(entry_artwork_id, entry_title, entry_artist_id, entry_year, entr
         conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
         cursor = conn.cursor()
 
-        # Check if the ArtistID exists
+        
         cursor.execute("SELECT COUNT(*) FROM Artists WHERE ArtistID = %s", (artist_id,))
         if cursor.fetchone()[0] == 0:
             messagebox.showerror("Error", "Artist ID does not exist.")
             return
 
-        # Insert the new artwork
+        
         sql = "INSERT INTO Artworks (ArtworkID, Title, ArtistID, CreationYear, Medium, CollectionName, Category, Status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
         cursor.execute(sql, (artwork_id, title, artist_id, year, medium, collection, category, status))
         conn.commit()
@@ -755,13 +754,13 @@ def update_artwork(entry_artwork_id, entry_title, entry_artist_id, entry_year, e
         conn = mysql.connector.connect(host="localhost", user=entry_user.get(), password=entry_pass.get(), database="ArtCollection")
         cursor = conn.cursor()
 
-        # Check if the ArtistID exists
+        
         cursor.execute("SELECT COUNT(*) FROM Artists WHERE ArtistID = %s", (artist_id,))
         if cursor.fetchone()[0] == 0:
             messagebox.showerror("Error", "Artist ID does not exist.")
             return
 
-        # Update the artwork
+        
         sql = "UPDATE Artworks SET Title=%s, ArtistID=%s, CreationYear=%s, Medium=%s, CollectionName=%s, Category=%s, Status=%s WHERE ArtworkID=%s"
         cursor.execute(sql, (title, artist_id, year, medium, collection, category, status, artwork_id))
         conn.commit()
